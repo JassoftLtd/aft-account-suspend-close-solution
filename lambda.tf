@@ -66,9 +66,6 @@ resource "aws_lambda_function" "aft_suspend_account_ou_lambda" {
     }
   }
   timeout = 30
-  tracing_config {
-    mode = "Active"
-  }
 }
 
 resource "aws_lambda_event_source_mapping" "lambda_dynamodb" {
