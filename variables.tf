@@ -38,10 +38,9 @@ variable "aft-request-audit-table-stream-arn" {
   default     = ""
 }
 
-variable "aft_kms_key_arn" {
+variable "aft_kms_key_id" {
   type        = string
-  description = "AFT KMS key"
-  default     = ""
+  description = "AFT KMS id"
 }
 
 variable "private_subnets" {
