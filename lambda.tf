@@ -69,7 +69,6 @@ resource "aws_lambda_function" "aft_suspend_account_ou_lambda" {
   tracing_config {
     mode = "Active"
   }
-  reserved_concurrent_executions = 1
 }
 
 resource "aws_lambda_event_source_mapping" "lambda_dynamodb" {
