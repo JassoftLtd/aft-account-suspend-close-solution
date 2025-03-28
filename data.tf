@@ -74,7 +74,7 @@ data "aws_iam_policy_document" "dynamodb_lambda_policy" {
     sid       = "AllowLambdaFunctionKMSAccess"
     effect    = "Allow"
     actions   = ["kms:Decrypt"]
-    resources = [var.aft-request-audit-table-encrption-key-id]
+    resources = [var.aft_kms_key_arn]
   }
 
   statement {

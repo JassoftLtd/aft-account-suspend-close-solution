@@ -38,9 +38,9 @@ variable "aft-request-audit-table-stream-arn" {
   default     = ""
 }
 
-variable "aft-request-audit-table-encrption-key-id" {
+variable "aft_kms_key_arn" {
   type        = string
-  description = "DynamoDB table aft-request-audit table stream ARN"
+  description = "AFT KMS key"
   default     = ""
 }
 
