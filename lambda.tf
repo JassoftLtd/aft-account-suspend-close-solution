@@ -81,5 +81,5 @@ resource "aws_lambda_event_source_mapping" "lambda_dynamodb" {
 resource "aws_cloudwatch_log_group" "aft_suspend_account_ou_lambda_log" {
   name              = "/aws/lambda/aft_suspend_account_ou_lambda_log"
   retention_in_days = var.cloudwatch_log_group_retention
-  kms_key_id        = var.aft_kms_key_arn
+  # kms_key_id        = var.aft_kms_key_arn
 }
