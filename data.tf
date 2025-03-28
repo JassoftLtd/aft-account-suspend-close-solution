@@ -22,39 +22,6 @@ data "archive_file" "aft_suspend_account" {
   output_path = "${path.module}/lambda/aft_suspend_account.zip"
 }
 
-data "aws_iam_policy_document" "key_initial" {
-  statement {
-    sid = "Enable IAM User Permissions"
-    principals {
-      type        = "AWS"
-      identifiers = ["arn:aws:iam::${data.aws_caller_identity.aft_management_id.account_id}:root"]
-    }
-    actions   = ["kms:Encrypt", "kms:Decrypt"]
-    resources = ["arn:aws:kms:${data.aws_region.aft_management_region.name}:${data.aws_caller_identity.aft_management_id.account_id}:*"]
-  }
-
-  statement {
-    sid = "allow-cloudwatch-logs-to-use"
-    principals {
-      type        = "Service"
-      identifiers = ["logs.amazonaws.com"]
-    }
-    actions = [
-      "kms:Encrypt*",
-      "kms:Decrypt*",
-      "kms:ReEncrypt*",
-      "kms:GenerateDataKey*",
-      "kms:Describe*"
-    ]
-    resources = ["arn:aws:kms:${data.aws_region.aft_management_region.name}:${data.aws_caller_identity.aft_management_id.account_id}:*"]
-    condition {
-      test     = "ArnEquals"
-      variable = "kms:EncryptionContext:aws:logs:arn"
-      values   = ["arn:aws:logs:${data.aws_region.aft_management_region.name}:${data.aws_caller_identity.aft_management_id.account_id}:log-group:*"]
-    }
-  }
-}
-
 data "aws_iam_policy_document" "dynamodb_lambda_policy" {
   statement {
     sid       = "AllowLambdaFunctionToCreateLogs"
@@ -111,6 +78,12 @@ data "aws_iam_policy_document" "lambda_assume_acc_close_policy" {
     effect    = "Allow"
     actions   = ["sts:AssumeRole"]
     resources = [data.aws_arn.aft_to_ct_cross_account_role_arn.arn]
+  }
+
+  statement {
+    effect    = "Allow"
+    actions   = ["sqs:SendMessage"]
+    resources = [aws_sqs_queue.aft_suspend_account_dlq.arn]
   }
 }
 
