@@ -8,29 +8,11 @@ variable "cloudwatch_log_group_retention" {
   }
 }
 
-variable "default_tags" {
-  type        = map(string)
-  description = "Default tags for the module"
-  default = {
-    Environment = "AFT"
-    Owner       = "ACME Corp"
-    Project     = "ACME Project"
-    CostCenter  = "ACME"
-  }
-}
-
-variable "region" {
-  type        = string
-  description = "Default Region"
-  default     = "us-west-2"
-}
-
 variable "aft_to_ct_cross_account_role_name" {
   type        = string
   description = "AFT Cross Account Role"
   default     = "AFTCrossAccountRole"
 }
-
 
 variable "ct_account_id" {
   type        = string
@@ -62,21 +44,18 @@ variable "aft-request-audit-table-encrption-key-id" {
   default     = ""
 }
 
-variable "private1_subnet_id" {
-  type        = string
-  description = "Private Subnet 1"
-  default     = ""
+variable "private_subnets" {
+  type        = list(string)
+  description = "Private Subnets"
+  nullable = true
 }
-
-variable "private2_subnet_id" {
-  type        = string
-  description = "Private Subnet 2"
-  default     = ""
-}
-
 
 variable "private_sg_id" {
   type        = string
   description = "Private Subnet Security Group"
-  default     = ""
+  nullable = true
+}
+
+variable "aft_enable_vpc" {
+  type = bool
 }
