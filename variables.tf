@@ -47,13 +47,13 @@ variable "aft-request-audit-table-encrption-key-id" {
 variable "private_subnets" {
   type        = list(string)
   description = "Private Subnets"
-  nullable = true
+  default     = []
 }
 
 variable "private_sg_id" {
   type        = string
   description = "Private Subnet Security Group"
-  nullable = true
+  default     = ""
 }
 
 variable "aft_enable_vpc" {
