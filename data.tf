@@ -41,7 +41,7 @@ data "aws_iam_policy_document" "dynamodb_lambda_policy" {
     sid       = "AllowLambdaFunctionKMSAccess"
     effect    = "Allow"
     actions   = ["kms:Decrypt"]
-    resources = [data.aws_kms_key.key.arn]
+    resources = [var.aft_kms_key_arn]
   }
 
   statement {
@@ -85,8 +85,4 @@ data "aws_iam_policy_document" "lambda_assume_acc_close_policy" {
     actions   = ["sqs:SendMessage"]
     resources = [aws_sqs_queue.aft_suspend_account_dlq.arn]
   }
-}
-
-data "aws_kms_key" "key" {
-  key_id = var.aft_kms_key_id
 }

@@ -42,7 +42,7 @@ resource "aws_lambda_function" "aft_suspend_account_ou_lambda" {
   code_signing_config_arn = aws_lambda_code_signing_config.this.arn
   source_code_hash        = data.archive_file.aft_suspend_account.output_base64sha256
   runtime                 = "python3.9"
-  kms_key_arn             = data.aws_kms_key.key.arn
+  kms_key_arn             = var.aft_kms_key_arn
 
   dead_letter_config {
     target_arn = aws_sqs_queue.aft_suspend_account_dlq.arn
@@ -81,5 +81,5 @@ resource "aws_lambda_event_source_mapping" "lambda_dynamodb" {
 resource "aws_cloudwatch_log_group" "aft_suspend_account_ou_lambda_log" {
   name              = "/aws/lambda/aft_suspend_account_ou_lambda_log"
   retention_in_days = var.cloudwatch_log_group_retention
-  kms_key_id        = var.aft_kms_key_id
+  kms_key_id        = var.aft_kms_key_arn
 }
