@@ -1,6 +1,6 @@
 
-resource "aws_sqs_queue" "aftlambdadlq" {
-  name                       = "sampledlq"
+resource "aws_sqs_queue" "aft_suspend_account_dlq" {
+  name                       = "aft-suspend-account-dlq"
   delay_seconds              = 300
   max_message_size           = 2048
   message_retention_seconds  = 1209600
@@ -45,7 +45,7 @@ resource "aws_lambda_function" "aft_suspend_account_ou_lambda" {
   kms_key_arn             = aws_kms_key.aft_kms_key.arn
 
   dead_letter_config {
-    target_arn = aws_sqs_queue.aftlambdadlq.arn
+    target_arn = aws_sqs_queue.aft_suspend_account_dlq.arn
   }
   dynamic "vpc_config" {
     for_each = var.aft_enable_vpc ? [1] : []
