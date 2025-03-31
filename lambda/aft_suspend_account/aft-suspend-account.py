@@ -46,66 +46,62 @@ def lambda_handler(event, context):
 
 
 def handle_insert(record):
-    try:
+    print("Handling INSERT Event")
 
-        print("Handling INSERT Event")
+    # 3a. Get newImage content
+    newImage = record["dynamodb"]["NewImage"]
+    logger.debug(newImage)
+    # 3b. Parse values
+    AccName = newImage["control_tower_parameters"]["M"]["AccountName"]["S"]
+    AccEmail = newImage["control_tower_parameters"]["M"]["AccountEmail"]["S"]
+    SSOEmail = newImage["control_tower_parameters"]["M"]["SSOUserEmail"]["S"]
+    SSOFirstName = newImage["control_tower_parameters"]["M"]["SSOUserFirstName"][
+        "S"
+    ]
+    SSOLastName = newImage["control_tower_parameters"]["M"]["SSOUserLastName"]["S"]
+    DDEvent = newImage["ddb_event_name"]["S"]
+    SourceOU = newImage["control_tower_parameters"]["M"][
+        "ManagedOrganizationalUnit"
+    ]["S"]
 
-        # 3a. Get newImage content
-        newImage = record["dynamodb"]["NewImage"]
-        logger.debug(newImage)
-        # 3b. Parse values
-        AccName = newImage["control_tower_parameters"]["M"]["AccountName"]["S"]
-        AccEmail = newImage["control_tower_parameters"]["M"]["AccountEmail"]["S"]
-        SSOEmail = newImage["control_tower_parameters"]["M"]["SSOUserEmail"]["S"]
-        SSOFirstName = newImage["control_tower_parameters"]["M"]["SSOUserFirstName"][
-            "S"
-        ]
-        SSOLastName = newImage["control_tower_parameters"]["M"]["SSOUserLastName"]["S"]
-        DDEvent = newImage["ddb_event_name"]["S"]
-        SourceOU = newImage["control_tower_parameters"]["M"][
-            "ManagedOrganizationalUnit"
-        ]["S"]
+    # 3c. Print it
+    print("Account Email is " + AccEmail)
+    print("Account Name is " + AccName)
+    print("Account SSOEmail is " + SSOEmail)
+    print("Account SSOFirstName is " + SSOFirstName)
+    print("Account SSOLastName is " + SSOLastName)
+    print("Account DDEvent is " + DDEvent)
+    print("Source OU  is " + SourceOU)
 
-        # 3c. Print it
-        print("Account Email is " + AccEmail)
-        print("Account Name is " + AccName)
-        print("Account SSOEmail is " + SSOEmail)
-        print("Account SSOFirstName is " + SSOFirstName)
-        print("Account SSOLastName is " + SSOLastName)
-        print("Account DDEvent is " + DDEvent)
-        print("Source OU  is " + SourceOU)
+    if DDEvent == "REMOVE":
 
-        if DDEvent == "REMOVE":
+        # boto3 dynamo query
+        print("Retrieve Account ID from AFT Metadata Table")
+        response = table.query(
+            IndexName="emailIndex", KeyConditionExpression=Key("email").eq(AccEmail)
+        )
 
-            # boto3 dynamo query
-            print("Retrieve Account ID from AFT Metadata Table")
-            response = table.query(
-                IndexName="emailIndex", KeyConditionExpression=Key("email").eq(AccEmail)
-            )
+        print("The query returned the following items:")
 
-            print("The query returned the following items:")
+        if not response["Items"]:
+            print("Account metadata does not exist.")
+            print("Account was probably never created")
+            return
 
-            for i in response["Items"]:
-                print(i["id"])
-                Account = i["id"]
+        Account = response["Items"][0]["id"]
 
-            print("------------------------")
-            print(
-                Account
-                + " with Account Email as "
-                + AccEmail
-                + " will be closed and moved from "
-                + SourceOU
-                + " to  SUSPENDED OU"
-            )
-            print("------------------------")
-
-            handle_account_close(Account, SourceOU)
-
-    except Exception as e:
-        print(e)
         print("------------------------")
-        return "Error"
+        print(
+            Account
+            + " with Account Email as "
+            + AccEmail
+            + " will be closed and moved from "
+            + SourceOU
+            + " to  SUSPENDED OU"
+        )
+        print("------------------------")
+
+        handle_account_close(Account, SourceOU)
 
 
 def handle_account_close(Account, SourceOU):
