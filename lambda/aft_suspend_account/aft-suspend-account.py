@@ -12,7 +12,8 @@ SSM_AFT_REQUEST_METADATA_PATH = "/aft/resources/ddb/aft-request-metadata-table-n
 AFT_REQUEST_METADATA_EMAIL_INDEX = "emailIndex"
 session = boto3.Session()
 logger = logging.getLogger()
-dynamodb = boto3.resource("dynamodb", region_name="us-west-2")
+region = os.getenv("REGION")
+dynamodb = boto3.resource("dynamodb", region_name=region)
 table = dynamodb.Table("aft-request-metadata")
 
 if "log_level" in os.environ:
@@ -128,13 +129,13 @@ def handle_account_close(Account, SourceOU):
             aws_access_key_id=assumeRoleResult["Credentials"]["AccessKeyId"],
             aws_secret_access_key=assumeRoleResult["Credentials"]["SecretAccessKey"],
             aws_session_token=assumeRoleResult["Credentials"]["SessionToken"],
-            region_name=os.getenv("REGION"),
+            region_name=region,
         )
 
         print("Retrieve Org ID of " + SourceOU + "from Control Tower Account")
 
         SourceOrgIdclient = sessionAccount.client(
-            service_name="organizations", region_name=os.getenv("REGION")
+            service_name="organizations", region_name=region
         )
 
         paginator = SourceOrgIdclient.get_paginator(
@@ -152,7 +153,7 @@ def handle_account_close(Account, SourceOU):
         print("Org ID of " + SourceOU + " is " + source_ou_id)
 
         accountclient = sessionAccount.client(
-            service_name="organizations", region_name=os.getenv("REGION")
+            service_name="organizations", region_name=region
         )
 
         close_account_resp = accountclient.close_account(AccountId=Account)
