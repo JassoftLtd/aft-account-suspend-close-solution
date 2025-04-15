@@ -4,7 +4,7 @@ data "aws_region" "aft_management_region" {}
 data "aws_caller_identity" "aft_management_id" {}
 
 data "aws_arn" "aft_to_ct_cross_account_role_arn" {
-  arn = "arn:aws:iam::${data.aws_caller_identity.aft_management_id.account_id}:role/${var.aft_to_ct_cross_account_role_name}"
+  arn = "arn:aws:iam::${var.ct_account_id}:role/${var.aft_to_ct_cross_account_role_name}"
 }
 
 data "aws_iam_policy" "AmazonSQSFullAccess" {
